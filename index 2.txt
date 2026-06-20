@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Servicios · Selección y Confirmación</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #f2f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-frame {
+      max-width: 400px;
+      width: 100%;
+      background: white;
+      border-radius: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      padding: 20px 18px 28px;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .container {
+      padding: 0 2px 10px;
+    }
+
+    /* ----- BARRA DE PROCESO (pasos) ----- */
+    .process-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 0 18px;
+      padding: 0 4px;
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+    }
+
+    .step-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      transition: 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .step-circle.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .step-circle.completed {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .step-label {
+      font-size: 9px;
+      color: #6b7280;
+      margin-top: 4px;
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .step-label.active {
+      color: #2563eb;
+      font-weight: 600;
+    }
+
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: #e5e7eb;
+      margin: 0 2px;
+      align-self: flex-start;
+      margin-top: 14px;
+    }
+
+    .step-line.completed {
+      background: #2563eb;
+    }
+
+    /* Back button */
+    .back-button {
+      margin-bottom: 4px;
+      display: inline-block;
+      cursor: pointer;
+      font-size: 26px;
+      color: #111;
+      width: 40px;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .header-text {
+      flex: 1;
+    }
+
+    .main-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #000;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .avatar-image {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-left: 8px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #000;
+      margin-top: 22px;
+      margin-bottom: 12px;
+    }
+
+    /* Categorías */
+    .categories-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .category-card {
+      width: 23%;
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid #eee;
+      transition: 0.15s;
+      cursor: pointer;
+    }
+
+    .category-card.active {
+      border-color: #0b53c4;
+      background: #edf4ff;
+    }
+
+    .category-card i {
+      font-size: 28px;
+      color: #7f8c8d;
+      margin-bottom: 4px;
+    }
+
+    .category-card.active i {
+      color: #0b53c4;
+    }
+
+    .category-text {
+      font-size: 10px;
+      font-weight: 600;
+      color: #1e1e1e;
+      margin-top: 2px;
+    }
+
+    /* Textarea */
+    .text-area {
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 12px;
+      width: 100%;
+      resize: vertical;
+      font-size: 14px;
+      min-height: 60px;
+      outline: none;
+      transition: 0.15s;
+      font-family: inherit;
+    }
+
+    .text-area:focus {
+      border-color: #0b53c4;
+      background: white;
+    }
+
+    /* Foto */
+    .photo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .add-photo-box {
+      width: 85px;
+      height: 75px;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .add-photo-box i {
+      font-size: 24px;
+      color: #0b53c4;
+    }
+
+    .add-photo-text {
+      font-size: 10px;
+      color: #0b53c4;
+      margin-top: 2px;
+    }
+
+    .photo-instructions {
+      flex: 1;
+      font-size: 13px;
+      color: #555;
+    }
+
+    /* Ubicación */
+    .location-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .location-icon-box {
+      width: 45px;
+      height: 45px;
+      background: #f0f4ff;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .location-icon-box i {
+      font-size: 24px;
+      color: #0b53c4;
+    }
+
+    .location-text-box {
+      flex: 1;
+    }
+
+    .location-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .location-address {
+      font-size: 12px;
+      color: #777;
+    }
+
+    /* ----- CALENDARIO DESPLEGABLE ----- */
+    .date-section {
+      margin-top: 22px;
+    }
+
+    .date-selector-trigger {
+      display: flex;
+      align-items: center;
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: 0.15s;
+      justify-content: space-between;
+    }
+
+    .date-selector-trigger .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .date-selector-trigger i {
+      font-size: 20px;
+      color: #555;
+    }
+
+    .date-selector-text {
+      font-size: 14px;
+      color: #7f8c8d;
+    }
+
+    .date-selector-text.selected {
+      color: #111;
+      font-weight: 500;
+    }
+
+    .chevron-icon {
+      color: #aaa;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+
+    .chevron-icon.open {
+      transform: rotate(180deg);
+    }
+
+    .calendar-wrapper {
+      background: #f9fafc;
+      border-radius: 20px;
+      padding: 16px 12px;
+      border: 1px solid #eef0f4;
+      margin-top: 12px;
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .calendar-wrapper.open {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 0 4px;
+    }
+
+    .calendar-header .month-year {
+      font-weight: 600;
+      font-size: 16px;
+      color: #1e1e2a;
+    }
+
+    .calendar-header .nav-icons i {
+      font-size: 18px;
+      color: #555;
+      margin: 0 8px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 30px;
+      transition: 0.1s;
+    }
+
+    .calendar-header .nav-icons i:hover {
+      background: #eaeef4;
+    }
+
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      letter-spacing: 0.3px;
+      margin-bottom: 8px;
+    }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .day-cell {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.1s;
+      color: #1e1e2a;
+      background: transparent;
+    }
+
+    .day-cell.empty {
+      cursor: default;
+      color: transparent;
+      pointer-events: none;
+    }
+
+    .day-cell:hover:not(.empty) {
+      background: #eaeef4;
+    }
+
+    .day-cell.selected {
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+    }
+
+    .day-cell.today {
+      border: 1.5px solid #2563eb;
+      background: white;
+    }
+
+    .day-cell.today.selected {
+      border: none;
+      background: #2563eb;
+      color: white;
+    }
+
+    .hora-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hora-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e1e2a;
+      margin-right: 4px;
+    }
+
+    .hora-opciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hora-chip {
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 30px;
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1e1e2a;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+
+    .hora-chip:hover {
+      background: #eef2f7;
+    }
+
+    .hora-chip.active {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
+
+    /* Botón continuar */
+    .continue-button {
+      background: #2563eb;
+      border-radius: 14px;
+      padding: 16px 0;
+      text-align: center;
+      margin-top: 30px;
+      font-weight: 700;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: 0.15s;
+      border: none;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .continue-button i {
+      font-size: 18px;
+    }
+
+    .continue-button:hover {
+      background: #1d4ed8;
+    }
+
+    /* ----- PANTALLA CONFIRMACIÓN ----- */
+    .resumen-card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #eee;
+    }
+
+    .resumen-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .resumen-row + .resumen-row {
+      margin-top: 20px;
+    }
+
+    .icon-circle {
+      width: 38px;
+      height: 38px;
+      background: #f0f4ff;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .icon-circle i {
+      font-size: 20px;
+      color: #0b53c4;
+    }
+
+    .resumen-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .resumen-sub {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .resumen-fecha {
+      text-align: right;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .payment-container {
+      border-top: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .payment-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #f5f5f5;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+
+    .payment-item:last-child {
+      border-bottom: none;
+    }
+
+    .payment-item i:first-child {
+      font-size: 22px;
+      color: #555;
+      width: 28px;
+    }
+
+    .payment-info {
+      flex: 1;
+      margin-left: 14px;
+    }
+
+    .payment-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .payment-sub {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .payment-extra {
+      font-size: 12px;
+      color: #888;
+      margin-right: 10px;
+    }
+
+    .payment-item i.fa-chevron-right {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .codigo-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f9fafc;
+      border-radius: 30px;
+      padding: 6px 6px 6px 18px;
+      border: 1px solid #eef0f4;
+      margin-top: 8px;
+    }
+
+    .codigo-container input {
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      flex: 1;
+      outline: none;
+      padding: 8px 0;
+    }
+
+    .codigo-container button {
+      background: #2563eb;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 8px 18px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .codigo-container button:hover {
+      background: #1d4ed8;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .price-label {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .price-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: #000;
+    }
+
+    .price-row.total {
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+
+    .price-row.total .price-label,
+    .price-row.total .price-value {
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .terms-text {
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+      margin: 18px 0 12px;
+      line-height: 1.5;
+    }
+
+    .terms-text a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .confirm-button {
+      background: #2563eb;
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .confirm-button:hover {
+      background: #1d4ed8;
+    }
+
+    .confirm-button i {
+      color: white;
+      font-size: 16px;
+    }
+
+    .btn-text {
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .btn-price {
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .mt-10 { margin-top: 10px; }
+    .mb-10 { margin-bottom: 10px; }
+    .text-center { text-align: center; }
+
+    /* Ocultar pantallas */
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 420px) {
+      .phone-frame { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="container">
+
+    <!-- ==================== PANTALLA 1: SELECCIÓN ==================== -->
+    <div id="pantallaSeleccion">
+      <!-- Botón volver -->
+      <div class="back-button"><i class="fas fa-chevron-left"></i></div>
+
+      <!-- BARRA DE PROCESO (pasos) -->
+      <div class="process-bar">
+        <div class="step-item">
+          <div class="step-circle active">1</div>
+          <span class="step-label active">Selección</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <span class="step-label">Detalles</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <span class="step-label">Profesional</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <span class="step-label">Confirmar</span>
+        </div>
+      </div>
+
+      <!-- HEADER -->
+      <div class="header-container">
+        <div class="header-text">
+          <div class="main-title">¿Qué servicio necesitas?</div>
+          <div class="subtitle">Cuéntanos qué necesitas y nosotros te ayudamos</div>
+        </div>
+        <img class="avatar-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUK9lSk6JIqcmjz3QkieGrqYWs5MY9Bf0KotMZwiJLFw&s=10" alt="avatar" />
+      </div>
+
+      <!-- 1. Categoría -->
+      <div class="section-title">1. Selecciona la categoría</div>
+      <div class="categories-container" id="categoriasContainer">
+        <div class="category-card active" data-categoria="Electricidad">
+          <i class="fas fa-bolt"></i>
+          <span class="category-text">Electricidad</span>
+        </div>
+        <div class="category-card" data-categoria="Plomeria">
+          <i class="fas fa-water"></i>
+          <span class="category-text">Plomeria</span>
+        </div>
+        <div class="category-card" data-categoria="Pintura">
+          <i class="fas fa-paint-roller"></i>
+          <span class="category-text">Pintura</span>
+        </div>
+        <div class="category-card" data-categoria="Carpinteria">
+          <i class="fas fa-hammer"></i>
+          <span class="category-text">Carpinteria</span>
+        </div>
+      </div>
+
+      <!-- 2. Describe el problema -->
+      <div class="section-title">2. Describe el problema</div>
+      <textarea class="text-area" placeholder="Ej. Se fue la luz en toda la casa..."></textarea>
+
+      <!-- 3. Agregar foto -->
+      <div class="section-title">3. Agregar foto (opcional)</div>
+      <div class="photo-container">
+        <div class="add-photo-box">
+          <i class="fas fa-camera"></i>
+          <span class="add-photo-text">Agregar foto</span>
+        </div>
+        <span class="photo-instructions">Las fotos ayudan al profesional a entender mejor.</span>
+      </div>
+
+      <!-- 4. Ubicación -->
+      <div class="section-title">4. ¿Donde necesitas el servicio?</div>
+      <div class="location-container">
+        <div class="location-icon-box"><i class="fas fa-location-dot"></i></div>
+        <div class="location-text-box">
+          <div class="location-title">Casa</div>
+          <div class="location-address">Calle 123 #45-67, Col. Centro</div>
+        </div>
+      </div>
+
+      <!-- 5. Fecha y hora CON CALENDARIO DESPLEGABLE -->
+      <div class="date-section">
+        <div class="section-title">5. ¿Cuándo lo necesitas?</div>
+
+        <div class="date-selector-trigger" id="dateTrigger">
+          <div class="left">
+            <i class="fas fa-calendar"></i>
+            <span class="date-selector-text" id="fechaSeleccionada">Selecciona fecha y hora</span>
+          </div>
+          <i class="fas fa-chevron-down chevron-icon" id="chevronIcon"></i>
+        </div>
+
+        <div class="calendar-wrapper" id="calendarWrapper">
+          <div class="calendar-header">
+            <div class="month-year" id="monthYear">Mayo 2026</div>
+            <div class="nav-icons">
+              <i class="fas fa-chevron-left" id="prevMonth"></i>
+              <i class="fas fa-chevron-right" id="nextMonth"></i>
+            </div>
+          </div>
+
+          <div class="weekdays">
+            <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+          </div>
+
+          <div class="days-grid" id="daysGrid"></div>
+
+          <div class="hora-selector">
+            <span class="hora-label"><i class="far fa-clock" style="margin-right: 6px;"></i>Hora:</span>
+            <div class="hora-opciones" id="horasContainer">
+              <span class="hora-chip" data-hora="9:00 AM">9:00 AM</span>
+              <span class="hora-chip active" data-hora="10:00 AM">10:00 AM</span>
+              <span class="hora-chip" data-hora="11:00 AM">11:00 AM</span>
+              <span class="hora-chip" data-hora="12:00 PM">12:00 PM</span>
+              <span class="hora-chip" data-hora="1:00 PM">1:00 PM</span>
+              <span class="hora-chip" data-hora="2:00 PM">2:00 PM</span>
+              <span class="hora-chip" data-hora="3:00 PM">3:00 PM</span>
+              <span class="hora-chip" data-hora="4:00 PM">4:00 PM</span>
+              <span class="hora-chip" data-hora="5:00 PM">5:00 PM</span>
+              <span class="hora-chip" data-hora="6:00 PM">6:00 PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón Continuar -->
+      <button class="continue-button" id="btnContinuar">
+        <i class="fas fa-arrow-right"></i> Continuar
+      </button>
+    </div>
+
+    <!-- ==================== PANTALLA 2: CONFIRMACIÓN ==================== -->
+    <div id="pantallaConfirmacion" class="hidden">
+      <!-- Botón volver -->
+      <div class="back-button" id="btnVolverSeleccion"><i class="fas fa-chevron-left"></i></div>
+
+      <!-- BARRA DE PROCESO (pasos) - Confirmación activa -->
+      <div class="process-bar">
+        <div class="step-item">
+          <div class="step-circle completed">1</div>
+          <span class="step-label">Selección</span>
+        </div>
+        <div class="step-line completed"></div>
+        <div class="step-item">
+          <div class="step-circle completed">2</div>
+          <span class="step-label">Detalles</span>
+        </div>
+        <div class="step-line completed"></div>
+        <div class="step-item">
+          <div class="step-circle completed">3</div>
+          <span class="step-label">Profesional</span>
+        </div>
+        <div class="step-line completed"></div>
+        <div class="step-item">
+          <div class="step-circle active">4</div>
+          <span class="step-label active">Confirmar</span>
+        </div>
+      </div>
+
+      <div class="main-title text-center" style="margin-bottom: 24px; font-size: 24px;">Confirmar servicio</div>
+
+      <!-- Resumen -->
+      <div class="section-title">Resumen del servicio</div>
+      <div class="resumen-card">
+        <div class="resumen-row">
+          <div class="icon-circle"><i class="fas fa-bolt"></i></div>
+          <div style="flex:1;">
+            <div class="resumen-label">Electricidad</div>
+            <div class="resumen-sub">Revisar el tablero eléctrico y falla de luz general.</div>
+          </div>
+          <div class="resumen-fecha">
+            <div class="resumen-label">Fecha y hora</div>
+            <div class="resumen-sub" style="text-align:right;" id="fechaHoraResumen">Lun, 27 de mayo<br>10:00 AM</div>
+          </div>
+        </div>
+        <div class="resumen-row">
+          <div class="icon-circle"><i class="fas fa-location-dot"></i></div>
+          <div style="flex:1;">
+            <div class="resumen-label">Casa</div>
+            <div class="resumen-sub">Calle 123 #45-67, Col. Centro</div>
+            <div class="resumen-sub">Ciudad de México</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Métodos de pago -->
+      <div class="section-title">Selecciona tu método de pago</div>
+      <div class="payment-container">
+        <div class="payment-item">
+          <i class="far fa-credit-card"></i>
+          <div class="payment-info">
+            <div class="payment-label">Tarjeta de crédito o débito</div>
+          </div>
+          <span class="payment-extra"><i class="fab fa-cc-visa"></i> •••• 4242</span>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+        <div class="payment-item">
+          <i class="fab fa-paypal"></i>
+          <div class="payment-info">
+            <div class="payment-label">PayPal</div>
+          </div>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+        <div class="payment-item">
+          <i class="fas fa-money-bill-wave"></i>
+          <div class="payment-info">
+            <div class="payment-label">Efectivo</div>
+            <div class="payment-sub">Paga al profesional al finalizar el servicio</div>
+          </div>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+        <div class="payment-item">
+          <i class="fas fa-wallet"></i>
+          <div class="payment-info">
+            <div class="payment-label">Billetera digital</div>
+            <div class="payment-sub">Saldo disponible: $250.00</div>
+          </div>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+      </div>
+
+      <!-- Código descuento -->
+      <div class="section-title">¿Tienes un código de descuento?</div>
+      <div class="codigo-container">
+        <input type="text" placeholder="Ingresa tu código" id="codigoInput">
+        <button id="aplicarCodigo">Aplicar</button>
+      </div>
+
+      <!-- Precios -->
+      <div class="section-title">Detalle de precios</div>
+      <div class="price-row">
+        <span class="price-label">Costo del servicio (estimado)</span>
+        <span class="price-value">$450.00</span>
+      </div>
+      <div class="price-row">
+        <span class="price-label">Tarifa de desplazamiento</span>
+        <span class="price-value">$50.00</span>
+      </div>
+      <div class="price-row total">
+        <span class="price-label">Total a pagar</span>
+        <span class="price-value" id="totalPagar">$500.00</span>
+      </div>
+
+      <!-- Términos -->
+      <div class="terms-text">
+        Al confirmar, aceptas nuestros <a href="#">Términos y condiciones</a> y la <a href="#">Política de privacidad</a>.
+      </div>
+
+      <!-- Botón confirmar -->
+      <button class="confirm-button" id="confirmarBtn">
+        <i class="fas fa-lock"></i>
+        <span class="btn-text">Confirmar y solicitar servicio</span>
+        <span class="btn-price" id="btnTotal">$500.00</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ==================== CAMBIO DE PANTALLA ====================
+    const seleccion = document.getElementById('pantallaSeleccion');
+    const confirmacion = document.getElementById('pantallaConfirmacion');
+    const btnContinuar = document.getElementById('btnContinuar');
+    const btnVolver = document.getElementById('btnVolverSeleccion');
+
+    function mostrarPantalla(pantalla) {
+      if (pantalla === 'seleccion') {
+        seleccion.classList.remove('hidden');
+        confirmacion.classList.add('hidden');
+      } else {
+        seleccion.classList.add('hidden');
+        confirmacion.classList.remove('hidden');
+        actualizarResumenConfirmacion();
+      }
+    }
+
+    btnContinuar.addEventListener('click', function() {
+      mostrarPantalla('confirmacion');
+    });
+
+    btnVolver.addEventListener('click', function() {
+      mostrarPantalla('seleccion');
+    });
+
+    // ==================== CALENDARIO ====================
+    const dateTrigger = document.getElementById('dateTrigger');
+    const calendarWrapper = document.getElementById('calendarWrapper');
+    const chevronIcon = document.getElementById('chevronIcon');
+    const fechaSeleccionadaEl = document.getElementById('fechaSeleccionada');
+
+    const monthYearEl = document.getElementById('monthYear');
+    const daysGrid = document.getElementById('daysGrid');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+
+    let currentDate = new Date();
+    let selectedDate = new Date(2026, 4, 27);
+    let selectedHora = '10:00 AM';
+    let calendarOpen = false;
+
+    function formatFechaCorta(date) {
+      const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+      const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      return `${dias[date.getDay()]}, ${date.getDate()} ${meses[date.getMonth()]}`;
+    }
+
+    function formatFechaCompleta(date) {
+      const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+      const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      return `${dias[date.getDay()]}, ${date.getDate()} de ${meses[date.getMonth()]}`;
+    }
+
+    function actualizarTextoFecha() {
+      const fechaStr = formatFechaCorta(selectedDate);
+      fechaSeleccionadaEl.textContent = `${fechaStr} · ${selectedHora}`;
+      fechaSeleccionadaEl.classList.add('selected');
+    }
+
+    function actualizarResumenConfirmacion() {
+      const fechaStr = formatFechaCompleta(selectedDate);
+      document.getElementById('fechaHoraResumen').innerHTML = `${fechaStr}<br>${selectedHora}`;
+    }
+
+    function renderCalendar(year, month) {
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startDayOfWeek = firstDay.getDay();
+      let startOffset = (startDayOfWeek === 0) ? 6 : startDayOfWeek - 1;
+
+      const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      monthYearEl.textContent = `${monthNames[month]} ${year}`;
+
+      let html = '';
+      for (let i = 0; i < startOffset; i++) {
+        html += `<div class="day-cell empty"></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(year, month, day);
+        const isSelected = (dateObj.getFullYear() === selectedDate.getFullYear() &&
+                            dateObj.getMonth() === selectedDate.getMonth() &&
+                            dateObj.getDate() === selectedDate.getDate());
+        const isToday = (dateObj.getFullYear() === new Date().getFullYear() &&
+                         dateObj.getMonth() === new Date().getMonth() &&
+                         dateObj.getDate() === new Date().getDate());
+
+        let cls = 'day-cell';
+        if (isSelected) cls += ' selected';
+        if (isToday) cls += ' today';
+
+        html += `<div class="${cls}" data-day="${day}" data-month="${month}" data-year="${year}">${day}</div>`;
+      }
+
+      daysGrid.innerHTML = html;
+
+      document.querySelectorAll('.day-cell:not(.empty)').forEach(el => {
+        el.addEventListener('click', function() {
+          const day = parseInt(this.dataset.day);
+          const month = parseInt(this.dataset.month);
+          const year = parseInt(this.dataset.year);
+          selectedDate = new Date(year, month, day);
+          renderCalendar(year, month);
+          actualizarTextoFecha();
+          cerrarCalendario();
+        });
+      });
+    }
+
+    function cambiarMes(delta) {
+      let year = currentDate.getFullYear();
+      let month = currentDate.getMonth();
+      month += delta;
+      if (month < 0) { month = 11; year--; }
+      else if (month > 11) { month = 0; year++; }
+      currentDate = new Date(year, month, 1);
+      renderCalendar(year, month);
+    }
+
+    function abrirCalendario() {
+      calendarWrapper.classList.add('open');
+      chevronIcon.classList.add('open');
+      calendarOpen = true;
+    }
+
+    function cerrarCalendario() {
+      calendarWrapper.classList.remove('open');
+      chevronIcon.classList.remove('open');
+      calendarOpen = false;
+    }
+
+    function toggleCalendario() {
+      if (calendarOpen) {
+        cerrarCalendario();
+      } else {
+        abrirCalendario();
+      }
+    }
+
+    dateTrigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleCalendario();
+    });
+
+    document.addEventListener('click', function(e) {
+      if (calendarOpen && !calendarWrapper.contains(e.target) && e.target !== dateTrigger && !dateTrigger.contains(e.target)) {
+        cerrarCalendario();
+      }
+    });
+
+    prevMonthBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      cambiarMes(-1);
+    });
+
+    nextMonthBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      cambiarMes(1);
+    });
+
+    // ==================== HORAS ====================
+    const horaChips = document.querySelectorAll('.hora-chip');
+    horaChips.forEach(chip => {
+      chip.addEventListener('click', function() {
+        horaChips.forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        selectedHora = this.dataset.hora;
+        actualizarTextoFecha();
+      });
+    });
+
+    // ==================== CATEGORÍAS ====================
+    const categorias = document.querySelectorAll('.category-card');
+    categorias.forEach(card => {
+      card.addEventListener('click', function() {
+        categorias.forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // ==================== AGREGAR FOTO ====================
+    document.querySelector('.add-photo-box')?.addEventListener('click', function() {
+      alert('📸 Función "Agregar foto" (simulada)');
+    });
+
+    // ==================== CÓDIGO DESCUENTO ====================
+    const codigoInput = document.getElementById('codigoInput');
+    const aplicarBtn = document.getElementById('aplicarCodigo');
+    let descuentoAplicado = false;
+
+    function actualizarTotal() {
+      let base = 500;
+      if (descuentoAplicado) {
+        base = 450;
+      }
+      const totalStr = `$${base.toFixed(2)}`;
+      document.getElementById('totalPagar').textContent = totalStr;
+      document.getElementById('btnTotal').textContent = totalStr;
+    }
+
+    aplicarBtn.addEventListener('click', function() {
+      const codigo = codigoInput.value.trim();
+      if (codigo === 'DESCUENTO50') {
+        descuentoAplicado = true;
+        alert('✅ Código aplicado: $50 de descuento');
+      } else if (codigo === '') {
+        alert('Ingresa un código');
+        return;
+      } else {
+        alert('❌ Código no válido');
+        descuentoAplicado = false;
+      }
+      actualizarTotal();
+    });
+
+    // ==================== CONFIRMAR ====================
+    document.getElementById('confirmarBtn').addEventListener('click', function() {
+      const fecha = formatFechaCompleta(selectedDate);
+      alert(`✅ Servicio confirmado para el ${fecha} a las ${selectedHora}`);
+    });
+
+    // ==================== MÉTODOS DE PAGO (feedback) ====================
+    document.querySelectorAll('.payment-item').forEach(item => {
+      item.addEventListener('click', function() {
+        this.style.backgroundColor = '#f0f7ff';
+        setTimeout(() => this.style.backgroundColor = 'transparent', 250);
+      });
+    });
+
+    // ==================== BACK BUTTON (decorativo) ====================
+    document.querySelectorAll('.back-button').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (this.id === 'btnVolverSeleccion') return;
+        alert('← Volver atrás (simulado)');
+      });
+    });
+
+    // ==================== INICIALIZAR ====================
+    selectedDate = new Date(2026, 4, 27);
+    currentDate = new Date(2026, 4, 1);
+    renderCalendar(2026, 4);
+    actualizarTextoFecha();
+
+    horaChips.forEach(c => c.classList.remove('active'));
+    document.querySelector('.hora-chip[data-hora="10:00 AM"]')?.classList.add('active');
+    selectedHora = '10:00 AM';
+    actualizarTextoFecha();
+
+    cerrarCalendario();
+    actualizarTotal();
+  })();
+</script>
+</body>
+</html>
